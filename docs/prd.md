@@ -4,7 +4,7 @@
 **Versi Dokumen:** 1.0.0  
 **Status:** Final / Siap Develop  
 **Target Rilis MVP:** Q1 2026  
-**Pemilik Proyek:** [Nama Anda / Tim Pengembang]
+**Pemilik Proyek:** Jarwonozt
 
 ---
 
