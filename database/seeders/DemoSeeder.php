@@ -7,6 +7,7 @@ use App\Models\LetterTemplate;
 use App\Models\MasterRt;
 use App\Models\MasterRw;
 use App\Models\Resident;
+use App\Models\Treasury;
 use App\Models\TreasuryCategory;
 use App\Models\User;
 use App\Models\Village;
@@ -47,7 +48,7 @@ class DemoSeeder extends Seeder
             'email' => 'sekretaris@sim-rw.test',
         ]);
 
-        User::factory()->role('bendahara')->create([
+        $bendahara = User::factory()->role('bendahara')->create([
             'name' => 'Bendahara RW',
             'email' => 'bendahara@sim-rw.test',
         ]);
@@ -117,12 +118,32 @@ class DemoSeeder extends Seeder
             'type' => 'usaha',
         ]);
 
-        foreach (['Iuran Warga', 'Sumbangan'] as $name) {
-            TreasuryCategory::factory()->create(['name' => $name, 'type' => 'in']);
-        }
+        $incomeCategories = collect(['Iuran Warga', 'Sumbangan'])
+            ->map(fn ($name) => TreasuryCategory::factory()->create(['name' => $name, 'type' => 'in']));
 
-        foreach (['Listrik & Kebersihan', 'Konsumsi Kegiatan'] as $name) {
-            TreasuryCategory::factory()->create(['name' => $name, 'type' => 'out']);
+        $expenseCategories = collect(['Listrik & Kebersihan', 'Konsumsi Kegiatan'])
+            ->map(fn ($name) => TreasuryCategory::factory()->create(['name' => $name, 'type' => 'out']));
+
+        foreach (range(0, 2) as $monthsAgo) {
+            $date = now()->subMonths($monthsAgo);
+
+            $incomeCategories->each(function (TreasuryCategory $category) use ($date, $bendahara) {
+                Treasury::factory()->create([
+                    'treasury_category_id' => $category->id,
+                    'type' => 'in',
+                    'transaction_date' => $date->copy()->startOfMonth()->addDays(4),
+                    'created_by' => $bendahara->id,
+                ]);
+            });
+
+            $expenseCategories->each(function (TreasuryCategory $category) use ($date, $bendahara) {
+                Treasury::factory()->create([
+                    'treasury_category_id' => $category->id,
+                    'type' => 'out',
+                    'transaction_date' => $date->copy()->startOfMonth()->addDays(14),
+                    'created_by' => $bendahara->id,
+                ]);
+            });
         }
 
         $this->command?->info("Demo siap. Login sebagai: {$superAdmin->email}, {$ketuaRw->email}, {$sekretaris->email}, dst. Password: password");

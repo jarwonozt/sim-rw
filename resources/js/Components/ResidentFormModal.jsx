@@ -33,7 +33,7 @@ export default function ResidentFormModal({ show, onClose, resident, familyHeadI
                   name: resident.name,
                   gender: resident.gender,
                   birth_place: resident.birth_place ?? '',
-                  birth_date: resident.birth_date ?? '',
+                  birth_date: resident.birth_date ? resident.birth_date.slice(0, 10) : '',
                   is_family_head: resident.is_family_head,
                   relationship_status: resident.relationship_status ?? '',
                   occupation: resident.occupation ?? '',

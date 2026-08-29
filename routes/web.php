@@ -9,6 +9,9 @@ use App\Http\Controllers\MasterRwController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\ResidentSearchController;
+use App\Http\Controllers\TreasuryCategoryController;
+use App\Http\Controllers\TreasuryController;
+use App\Http\Controllers\TreasuryReportController;
 use App\Http\Controllers\WilayahController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -77,6 +80,21 @@ Route::middleware(['auth', 'role:super_admin,ketua_rw,sekretaris'])->group(funct
 
     Route::resource('letters', LetterController::class)->only(['index', 'create', 'store', 'show']);
     Route::get('/letters/{letter}/download', [LetterController::class, 'download'])->name('letters.download');
+});
+
+// Modul Keuangan / Kas RW (FR04) — Sekretaris & Ketua RT sengaja tidak
+// diberi akses (Bendahara adalah operator utama, Ketua RW mengawasi).
+Route::middleware(['auth', 'role:super_admin,ketua_rw,bendahara'])->group(function () {
+    Route::resource('treasury-categories', TreasuryCategoryController::class)
+        ->parameters(['treasury-categories' => 'treasuryCategory'])
+        ->only(['index', 'store', 'update', 'destroy']);
+
+    Route::resource('treasuries', TreasuryController::class)
+        ->except(['show']);
+
+    Route::get('/treasury-report', [TreasuryReportController::class, 'index'])->name('treasury-report.index');
+    Route::get('/treasury-report/export-excel', [TreasuryReportController::class, 'exportExcel'])->name('treasury-report.export-excel');
+    Route::get('/treasury-report/export-pdf', [TreasuryReportController::class, 'exportPdf'])->name('treasury-report.export-pdf');
 });
 
 require __DIR__.'/auth.php';
