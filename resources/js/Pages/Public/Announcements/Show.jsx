@@ -16,24 +16,24 @@ export default function Show({ announcement }) {
 
             <Link
                 href={route('public-announcements.index')}
-                className="text-sm font-medium text-emerald-700 hover:underline"
+                className="text-sm font-medium text-primary hover:underline"
             >
                 &larr; Kembali ke daftar pengumuman
             </Link>
 
-            <article className="mt-4 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+            <article className="mt-4 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm shadow-slate-200/50">
                 {announcement.image && (
                     <img
                         src={`/storage/${announcement.image}`}
                         alt={announcement.title}
-                        className="mb-4 max-h-96 w-full rounded-lg object-cover"
+                        className="mb-4 max-h-96 w-full rounded-xl object-cover"
                     />
                 )}
-                <p className="text-xs text-gray-500">{formatDate(announcement.publish_date)}</p>
-                <h1 className="mt-1 text-xl font-semibold text-gray-900">
+                <p className="text-xs text-slate-500">{formatDate(announcement.publish_date)}</p>
+                <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-900">
                     {announcement.title}
                 </h1>
-                <p className="mt-4 whitespace-pre-line text-sm text-gray-700">
+                <p className="mt-4 whitespace-pre-line text-sm text-slate-700">
                     {announcement.content}
                 </p>
             </article>

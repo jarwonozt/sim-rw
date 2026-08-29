@@ -8,6 +8,7 @@ use App\Models\Complaint;
 use App\Models\MasterRt;
 use App\Models\User;
 use App\Notifications\ComplaintResolvedNotification;
+use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -111,6 +112,8 @@ class ComplaintController extends Controller
         if ($nextStatus === 'selesai') {
             $complaint->user->notify(new ComplaintResolvedNotification($complaint));
         }
+
+        ActivityLogger::log('complaint.status_updated', "Mengubah status pengaduan \"{$complaint->title}\" menjadi \"{$nextStatus}\".");
 
         return back()->with('success', 'Status pengaduan berhasil diperbarui.');
     }

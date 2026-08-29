@@ -8,6 +8,7 @@ use App\Models\LetterTemplate;
 use App\Models\Resident;
 use App\Services\LetterContentRenderer;
 use App\Services\LetterNumberGenerator;
+use App\Support\ActivityLogger;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -64,6 +65,8 @@ class LetterController extends Controller
             'issued_by' => $request->user()->id,
             'issued_date' => $issuedDate,
         ]);
+
+        ActivityLogger::log('letter.issued', "Menerbitkan surat {$letter->letter_number}.");
 
         return to_route('letters.show', $letter)->with('success', 'Surat berhasil diterbitkan.');
     }

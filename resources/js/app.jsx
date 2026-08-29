@@ -18,6 +18,18 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(<App {...props} />);
+
+        // Sembunyikan splash screen setelah render pertama selesai dicat.
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                const splash = document.getElementById('app-splash');
+
+                if (splash) {
+                    splash.classList.add('app-splash-hidden');
+                    setTimeout(() => splash.remove(), 300);
+                }
+            });
+        });
     },
     progress: {
         color: '#4B5563',

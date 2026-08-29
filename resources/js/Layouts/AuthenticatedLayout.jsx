@@ -160,10 +160,10 @@ function SidebarLink({ item, onNavigate }) {
             href={route(item.route)}
             onClick={onNavigate}
             className={
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ' +
+                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ' +
                 (active
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900')
+                    ? 'bg-primary text-white shadow-md shadow-primary/30'
+                    : 'text-slate-600 hover:bg-white/70 hover:text-slate-900')
             }
         >
             <svg
@@ -187,21 +187,35 @@ function SidebarContent({ user, onNavigate }) {
 
     return (
         <div className="flex h-full flex-col">
-            <Link href="/" className="flex items-center gap-2 px-5 py-5">
-                <ApplicationLogo className="block h-8 w-auto fill-current text-emerald-700" />
-                <span className="text-base font-semibold text-gray-900">
+            <Link href="/" className="flex items-center gap-2.5 px-5 py-6">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-md shadow-primary/30">
+                    <ApplicationLogo className="block h-5 w-auto fill-current text-white" />
+                </span>
+                <span className="text-base font-bold tracking-tight text-slate-900">
                     SIM-RW
                 </span>
             </Link>
 
-            <nav className="flex-1 space-y-1 px-3">
+            <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
                 {items.map((item) => (
                     <SidebarLink key={item.name} item={item} onNavigate={onNavigate} />
                 ))}
             </nav>
 
-            <div className="border-t border-gray-100 p-4 text-sm text-gray-500">
-                {ROLE_LABELS[user.role] ?? user.role}
+            <div className="m-3 rounded-xl bg-white/70 p-3">
+                <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                        {user.name.charAt(0).toUpperCase()}
+                    </span>
+                    <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-900">
+                            {user.name}
+                        </p>
+                        <p className="truncate text-xs text-slate-500">
+                            {ROLE_LABELS[user.role] ?? user.role}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -215,14 +229,14 @@ function FlashMessages() {
     }
 
     return (
-        <div className="mb-4 space-y-2">
+        <div className="mb-6 space-y-2">
             {flash.success && (
-                <div className="rounded-lg bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                <div className="rounded-2xl border-l-4 border-primary bg-primary/5 px-4 py-3 text-sm font-medium text-primary">
                     {flash.success}
                 </div>
             )}
             {flash.error && (
-                <div className="rounded-lg bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+                <div className="rounded-2xl border-l-4 border-rose-500 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
                     {flash.error}
                 </div>
             )}
@@ -235,9 +249,15 @@ export default function AuthenticatedLayout({ header, children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
-        <div className="flex min-h-screen bg-gray-50 text-[15px]">
-            {/* Sidebar (desktop) */}
-            <aside className="hidden w-64 shrink-0 border-r border-gray-100 bg-white lg:block">
+        <div className="min-h-screen bg-slate-100 text-[15px] text-slate-900">
+            {/* Dekorasi latar untuk efek glassmorphism pada sidebar/navbar */}
+            <div className="pointer-events-none fixed inset-0 overflow-hidden">
+                <div className="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+                <div className="absolute -right-24 top-1/3 h-96 w-96 rounded-full bg-accent/10 blur-3xl" />
+            </div>
+
+            {/* Sidebar (desktop, fixed + glassmorphism) */}
+            <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-white/60 bg-white/70 shadow-xl shadow-slate-200/50 backdrop-blur-xl lg:block">
                 <SidebarContent user={user} />
             </aside>
 
@@ -245,10 +265,10 @@ export default function AuthenticatedLayout({ header, children }) {
             {sidebarOpen && (
                 <div className="fixed inset-0 z-40 lg:hidden">
                     <div
-                        className="absolute inset-0 bg-gray-900/40"
+                        className="absolute inset-0 bg-slate-900/40"
                         onClick={() => setSidebarOpen(false)}
                     />
-                    <aside className="absolute inset-y-0 left-0 w-64 bg-white shadow-xl">
+                    <aside className="absolute inset-y-0 left-0 w-64 bg-white/90 shadow-xl backdrop-blur-xl">
                         <SidebarContent
                             user={user}
                             onNavigate={() => setSidebarOpen(false)}
@@ -257,13 +277,13 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             )}
 
-            <div className="flex min-w-0 flex-1 flex-col">
-                <header className="flex h-16 items-center justify-between border-b border-gray-100 bg-white px-4 sm:px-6">
+            <div className="relative flex min-h-screen flex-col lg:pl-64">
+                <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-white/60 bg-white/70 px-4 backdrop-blur-xl sm:px-6">
                     <div className="flex items-center gap-3">
                         <button
                             type="button"
                             onClick={() => setSidebarOpen(true)}
-                            className="rounded-md p-2 text-gray-500 hover:bg-gray-100 lg:hidden"
+                            className="rounded-xl p-2 text-slate-500 hover:bg-white/70 lg:hidden"
                         >
                             <svg
                                 className="h-6 w-6"
@@ -286,9 +306,12 @@ export default function AuthenticatedLayout({ header, children }) {
                         <Dropdown.Trigger>
                             <button
                                 type="button"
-                                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+                                className="flex items-center gap-2 rounded-xl px-2 py-1.5 text-sm font-medium text-slate-600 hover:bg-white/70"
                             >
-                                {user.name}
+                                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                                    {user.name.charAt(0).toUpperCase()}
+                                </span>
+                                <span className="hidden sm:inline">{user.name}</span>
                                 <svg
                                     className="h-4 w-4"
                                     viewBox="0 0 20 20"
@@ -318,7 +341,7 @@ export default function AuthenticatedLayout({ header, children }) {
                     </Dropdown>
                 </header>
 
-                <main className="flex-1 p-4 sm:p-6">
+                <main className="relative flex-1 p-4 sm:p-6">
                     <FlashMessages />
                     {children}
                 </main>

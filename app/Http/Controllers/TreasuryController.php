@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTreasuryRequest;
 use App\Http\Requests\UpdateTreasuryRequest;
 use App\Models\Treasury;
 use App\Models\TreasuryCategory;
+use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -47,12 +48,15 @@ class TreasuryController extends Controller
     {
         $category = TreasuryCategory::query()->findOrFail($request->integer('treasury_category_id'));
 
-        Treasury::create([
+        $treasury = Treasury::create([
             ...$request->validated(),
             'type' => $category->type,
             'proof_photo' => $request->file('proof_photo')->store('treasuries', 'public'),
             'created_by' => $request->user()->id,
         ]);
+
+        $verb = $treasury->type === 'in' ? 'Mencatat kas masuk' : 'Mencatat kas keluar';
+        ActivityLogger::log('treasury.created', "{$verb} sebesar Rp".number_format((float) $treasury->amount, 0, ',', '.').'.');
 
         return to_route('treasuries.index')->with('success', 'Transaksi kas berhasil dicatat.');
     }
