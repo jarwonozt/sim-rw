@@ -1,0 +1,1 @@
+import{c as e,d as t,t as n}from"./app-bPGWmYdk.js";var r=t(e(),1),i=n(),a=(0,r.forwardRef)(function({className:e=``,...t},n){return(0,i.jsx)(`textarea`,{...t,className:`rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 `+e,ref:n})});export{a as t};

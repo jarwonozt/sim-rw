@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Announcement;
+use App\Models\Complaint;
 use App\Models\FamilyHead;
 use App\Models\LetterTemplate;
 use App\Models\MasterRt;
@@ -103,6 +105,17 @@ class DemoSeeder extends Seeder
                 });
         }
 
+        $demoFamilyHead = FamilyHead::factory()->create(['rt_id' => $rt1->id]);
+        $demoResident = Resident::factory()->familyHeadRole()->create([
+            'family_head_id' => $demoFamilyHead->id,
+            'name' => 'Warga Demo',
+        ]);
+        $demoWarga = User::factory()->role('warga')->create([
+            'name' => 'Warga Demo',
+            'email' => 'warga@sim-rw.test',
+            'resident_id' => $demoResident->id,
+        ]);
+
         LetterTemplate::factory()->create([
             'name' => 'Surat Keterangan Domisili',
             'type' => 'domisili',
@@ -146,6 +159,34 @@ class DemoSeeder extends Seeder
             });
         }
 
-        $this->command?->info("Demo siap. Login sebagai: {$superAdmin->email}, {$ketuaRw->email}, {$sekretaris->email}, dst. Password: password");
+        $complaint = Complaint::factory()->create([
+            'user_id' => $demoWarga->id,
+            'rt_id' => $rt1->id,
+            'title' => 'Lampu jalan gang mati',
+            'description' => 'Lampu penerangan di gang RT 001 sudah mati sejak 3 hari lalu, mohon segera diperbaiki.',
+            'status' => 'menunggu_verifikasi_rt',
+        ]);
+        $complaint->logs()->create([
+            'status' => 'menunggu_verifikasi_rt',
+            'changed_by' => $demoWarga->id,
+        ]);
+
+        Announcement::factory()->create([
+            'title' => 'Kerja Bakti Akbar Bulanan',
+            'content' => "Warga RW 001 dimohon berpartisipasi dalam kerja bakti akbar yang akan dilaksanakan pada hari Minggu pukul 07.00 WIB di halaman balai warga.\n\nMohon membawa alat kebersihan masing-masing.",
+            'publish_date' => now()->subDays(2),
+            'expire_date' => now()->addWeeks(2),
+            'created_by' => $ketuaRw->id,
+        ]);
+
+        Announcement::factory()->create([
+            'title' => 'Jadwal Pembayaran Iuran Bulanan',
+            'content' => 'Pembayaran iuran warga bulan ini dapat dilakukan melalui Bendahara RW paling lambat tanggal 10.',
+            'publish_date' => now()->subWeek(),
+            'expire_date' => null,
+            'created_by' => $ketuaRw->id,
+        ]);
+
+        $this->command?->info("Demo siap. Login sebagai: {$superAdmin->email}, {$ketuaRw->email}, {$sekretaris->email}, {$demoWarga->email}, dst. Password: password");
     }
 }

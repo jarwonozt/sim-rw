@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FamilyHeadController;
 use App\Http\Controllers\LetterController;
@@ -7,6 +9,7 @@ use App\Http\Controllers\LetterTemplateController;
 use App\Http\Controllers\MasterRtController;
 use App\Http\Controllers\MasterRwController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicAnnouncementController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\ResidentSearchController;
 use App\Http\Controllers\TreasuryCategoryController;
@@ -29,6 +32,10 @@ Route::get('/', function () {
 Route::get('/dashboard', DashboardController::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+// Arsip Pengumuman publik (FR06.2) — tidak perlu login.
+Route::get('/pengumuman', [PublicAnnouncementController::class, 'index'])->name('public-announcements.index');
+Route::get('/pengumuman/{announcement}', [PublicAnnouncementController::class, 'show'])->name('public-announcements.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -95,6 +102,18 @@ Route::middleware(['auth', 'role:super_admin,ketua_rw,bendahara'])->group(functi
     Route::get('/treasury-report', [TreasuryReportController::class, 'index'])->name('treasury-report.index');
     Route::get('/treasury-report/export-excel', [TreasuryReportController::class, 'exportExcel'])->name('treasury-report.export-excel');
     Route::get('/treasury-report/export-pdf', [TreasuryReportController::class, 'exportPdf'])->name('treasury-report.export-pdf');
+});
+
+// Modul Pengaduan & Aspirasi Warga (FR05) — Warga mengajukan, Ketua RT
+// memverifikasi, Ketua RW/Super Admin memproses hingga selesai.
+Route::middleware(['auth', 'role:super_admin,ketua_rw,ketua_rt,warga'])->group(function () {
+    Route::resource('complaints', ComplaintController::class)->only(['index', 'create', 'store', 'show']);
+    Route::patch('/complaints/{complaint}/status', [ComplaintController::class, 'updateStatus'])->name('complaints.update-status');
+});
+
+// Modul Pengumuman (FR06.1) — hanya Super Admin & Ketua RW yang menerbitkan.
+Route::middleware(['auth', 'role:super_admin,ketua_rw'])->group(function () {
+    Route::resource('announcements', AnnouncementController::class)->except(['show']);
 });
 
 require __DIR__.'/auth.php';
