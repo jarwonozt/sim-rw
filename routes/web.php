@@ -2,10 +2,13 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FamilyHeadController;
+use App\Http\Controllers\LetterController;
+use App\Http\Controllers\LetterTemplateController;
 use App\Http\Controllers\MasterRtController;
 use App\Http\Controllers\MasterRwController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResidentController;
+use App\Http\Controllers\ResidentSearchController;
 use App\Http\Controllers\WilayahController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +65,18 @@ Route::middleware(['auth', 'role:super_admin,ketua_rw,sekretaris,ketua_rt'])->gr
     Route::delete('/residents/{resident}', [ResidentController::class, 'destroy'])
         ->middleware('role:super_admin,ketua_rw,sekretaris')
         ->name('residents.destroy');
+});
+
+// Modul Surat Menyurat (FR03) — Bendahara sengaja tidak diberi akses (FR01.3).
+Route::middleware(['auth', 'role:super_admin,ketua_rw,sekretaris'])->group(function () {
+    Route::get('/residents/search', ResidentSearchController::class)->name('residents.search');
+
+    Route::resource('letter-templates', LetterTemplateController::class)
+        ->parameters(['letter-templates' => 'letterTemplate'])
+        ->only(['index', 'store', 'update', 'destroy']);
+
+    Route::resource('letters', LetterController::class)->only(['index', 'create', 'store', 'show']);
+    Route::get('/letters/{letter}/download', [LetterController::class, 'download'])->name('letters.download');
 });
 
 require __DIR__.'/auth.php';

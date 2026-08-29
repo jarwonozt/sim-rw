@@ -4,8 +4,10 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import ResidentFormModal from '@/Components/ResidentFormModal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+
+const CAN_ISSUE_LETTERS = ['super_admin', 'ketua_rw', 'sekretaris'];
 
 function formatDate(value) {
     if (!value) return '—';
@@ -19,6 +21,8 @@ function formatDate(value) {
 export default function Show({ familyHead }) {
     const [residentForm, setResidentForm] = useState({ show: false, resident: null });
     const [confirmDelete, setConfirmDelete] = useState(null);
+    const user = usePage().props.auth.user;
+    const canIssueLetters = CAN_ISSUE_LETTERS.includes(user.role);
 
     const deleteResident = () => {
         router.delete(route('residents.destroy', confirmDelete.id), {
@@ -101,6 +105,16 @@ export default function Show({ familyHead }) {
                                     {formatDate(resident.birth_date)}
                                 </td>
                                 <td className="px-4 py-3 text-right">
+                                    {canIssueLetters && (
+                                        <Link
+                                            href={route('letters.create', {
+                                                resident_id: resident.id,
+                                            })}
+                                            className="mr-3 text-sm font-medium text-sky-700 hover:underline"
+                                        >
+                                            Buat Surat
+                                        </Link>
+                                    )}
                                     <button
                                         onClick={() =>
                                             setResidentForm({ show: true, resident })
