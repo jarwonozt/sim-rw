@@ -10,15 +10,18 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class LetterTemplateFactory extends Factory
 {
+    protected $model = LetterTemplate::class;
+
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            //
+            'name' => 'Surat Keterangan '.fake()->word(),
+            'type' => fake()->randomElement(['domisili', 'sktm', 'usaha']),
+            'content' => '<p>Yang bertanda tangan di bawah ini menerangkan bahwa [nama_penduduk] dengan NIK [nik] benar merupakan warga kami.</p>',
+            'is_active' => true,
         ];
     }
 }

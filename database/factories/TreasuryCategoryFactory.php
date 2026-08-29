@@ -10,15 +10,16 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TreasuryCategoryFactory extends Factory
 {
+    protected $model = TreasuryCategory::class;
+
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->randomElement(['Iuran Warga', 'Sumbangan', 'Listrik', 'Konsumsi', 'Alat Kebersihan']),
+            'type' => fake()->randomElement(['in', 'out']),
         ];
     }
 }

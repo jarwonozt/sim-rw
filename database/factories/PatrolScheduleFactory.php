@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\MasterRt;
 use App\Models\PatrolSchedule;
+use App\Models\Resident;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -11,14 +13,16 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class PatrolScheduleFactory extends Factory
 {
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            //
+            'rt_id' => MasterRt::factory(),
+            'resident_id' => Resident::factory(),
+            'schedule_date' => fake()->dateTimeBetween('now', '+1 month'),
+            'shift' => fake()->randomElement(['19:00 - 22:00', '22:00 - 01:00', '01:00 - 04:00']),
+            'status' => 'scheduled',
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\FamilyHead;
+use App\Models\MasterRt;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,15 +11,18 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FamilyHeadFactory extends Factory
 {
+    protected $model = FamilyHead::class;
+
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            //
+            'rt_id' => MasterRt::factory(),
+            'no_kk' => fake()->unique()->numerify('################'),
+            'address' => fake()->streetAddress(),
+            'postal_code' => fake()->postcode(),
         ];
     }
 }

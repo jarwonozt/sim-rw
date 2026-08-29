@@ -10,15 +10,16 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProvinceFactory extends Factory
 {
+    protected $model = Province::class;
+
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            //
+            'id' => fake()->unique()->numberBetween(11, 99),
+            'name' => fake()->state(),
         ];
     }
 }

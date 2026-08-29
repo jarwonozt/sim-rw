@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Complaint;
 use App\Models\ComplaintLog;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -11,14 +13,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class ComplaintLogFactory extends Factory
 {
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            //
+            'complaint_id' => Complaint::factory(),
+            'status' => 'menunggu_verifikasi_rt',
+            'note' => fake()->optional()->sentence(),
+            'changed_by' => User::factory(),
         ];
     }
 }

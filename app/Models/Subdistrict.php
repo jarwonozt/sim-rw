@@ -2,21 +2,22 @@
 
 namespace App\Models;
 
+use Database\Factories\SubdistrictFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[Fillable(['id', 'district_id', 'name'])]
 class Subdistrict extends Model
 {
-    /** @use HasFactory<\Database\Factories\SubdistrictFactory> */
+    /** @use HasFactory<SubdistrictFactory> */
     use HasFactory;
 
     public $incrementing = false;
 
     public $timestamps = false;
-
-    protected $fillable = ['id', 'district_id', 'name'];
 
     /**
      * @return BelongsTo<District, $this>

@@ -1,6 +1,12 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FamilyHeadController;
+use App\Http\Controllers\MasterRtController;
+use App\Http\Controllers\MasterRwController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ResidentController;
+use App\Http\Controllers\WilayahController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -14,14 +20,48 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', DashboardController::class)
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Master Data: Wilayah, RW, RT (FR02.1) — hanya Super Admin & Ketua RW.
+Route::middleware(['auth', 'role:super_admin,ketua_rw'])->group(function () {
+    Route::get('/wilayah/provinces', [WilayahController::class, 'provinces'])->name('wilayah.provinces');
+    Route::get('/wilayah/districts', [WilayahController::class, 'districts'])->name('wilayah.districts');
+    Route::get('/wilayah/subdistricts', [WilayahController::class, 'subdistricts'])->name('wilayah.subdistricts');
+    Route::get('/wilayah/villages', [WilayahController::class, 'villages'])->name('wilayah.villages');
+
+    Route::get('/rw', [MasterRwController::class, 'edit'])->name('rw.edit');
+    Route::put('/rw', [MasterRwController::class, 'update'])->name('rw.update');
+
+    Route::get('/rt', [MasterRtController::class, 'index'])->name('rt.index');
+    Route::post('/rt', [MasterRtController::class, 'store'])->name('rt.store');
+    Route::put('/rt/{rt}', [MasterRtController::class, 'update'])->name('rt.update');
+    Route::delete('/rt/{rt}', [MasterRtController::class, 'destroy'])->name('rt.destroy');
+});
+
+// Master Data: Kepala Keluarga & Penduduk (FR02.2, FR02.3).
+// Ketua RT ikut diberi akses; isolasi wilayahnya ditegakkan oleh RtOwnedScope
+// pada model FamilyHead/Resident (lihat app/Models/Scopes).
+Route::middleware(['auth', 'role:super_admin,ketua_rw,sekretaris,ketua_rt'])->group(function () {
+    Route::resource('family-heads', FamilyHeadController::class)
+        ->parameters(['family-heads' => 'familyHead'])
+        ->except('destroy');
+    Route::delete('/family-heads/{familyHead}', [FamilyHeadController::class, 'destroy'])
+        ->middleware('role:super_admin,ketua_rw,sekretaris')
+        ->name('family-heads.destroy');
+
+    Route::post('/family-heads/{familyHead}/residents', [ResidentController::class, 'store'])->name('residents.store');
+    Route::put('/residents/{resident}', [ResidentController::class, 'update'])->name('residents.update');
+    Route::delete('/residents/{resident}', [ResidentController::class, 'destroy'])
+        ->middleware('role:super_admin,ketua_rw,sekretaris')
+        ->name('residents.destroy');
 });
 
 require __DIR__.'/auth.php';

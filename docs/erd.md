@@ -9,9 +9,9 @@ Diagram ini menerjemahkan seluruh Functional Requirements pada [`prd.md`](./prd.
 
 ```mermaid
 erDiagram
-    PROVINCES ||--o{ REGENCIES : "membawahi"
-    REGENCIES ||--o{ DISTRICTS : "membawahi"
-    DISTRICTS ||--o{ VILLAGES : "membawahi"
+    PROVINCES ||--o{ DISTRICTS : "membawahi"
+    DISTRICTS ||--o{ SUBDISTRICTS : "membawahi"
+    SUBDISTRICTS ||--o{ VILLAGES : "membawahi"
     VILLAGES ||--o{ MASTER_RW : "membawahi"
     MASTER_RW ||--o{ MASTER_RT : "membawahi"
     MASTER_RT ||--o{ FAMILY_HEADS : "menaungi"
@@ -41,25 +41,25 @@ erDiagram
     USERS ||--o{ ACTIVITY_LOGS : "melakukan aksi"
 
     PROVINCES {
-        bigint id PK
-        string name
-    }
-
-    REGENCIES {
-        bigint id PK
-        bigint province_id FK
+        int id PK "kode 2 digit"
         string name
     }
 
     DISTRICTS {
-        bigint id PK
-        bigint regency_id FK
+        int id PK "kode 4 digit, level Kabupaten/Kota"
+        int province_id FK
+        string name
+    }
+
+    SUBDISTRICTS {
+        int id PK "kode 6 digit, level Kecamatan"
+        int district_id FK
         string name
     }
 
     VILLAGES {
-        bigint id PK
-        bigint district_id FK
+        bigint id PK "kode 10 digit, level Kelurahan/Desa"
+        int subdistrict_id FK
         string name
     }
 
@@ -224,7 +224,7 @@ erDiagram
 
 ## Catatan Desain
 
-1. **Wilayah administratif** (`provinces` → `regencies` → `districts` → `villages` → `master_rw` → `master_rt`) mengikuti hierarki Kemendagri agar kompatibel dengan struktur data Dukcapil di masa depan (lihat Bagian 2.2 PRD — integrasi Dukcapil V2).
+1. **Wilayah administratif** (`provinces` → `districts` → `subdistricts` → `villages` → `master_rw` → `master_rt`) mengikuti hierarki Kemendagri agar kompatibel dengan struktur data Dukcapil di masa depan (lihat Bagian 2.2 PRD — integrasi Dukcapil V2). Penamaan `districts`/`subdistricts` disamakan persis dengan dataset sumber di `database/data/*.json` (kode wilayah dipakai langsung sebagai primary key, bukan auto-increment) supaya proses impor 1:1 tanpa mapping tambahan — lihat `database/seeders/WilayahSeeder.php`.
 2. **`users.role`** dibuat sebagai `enum` tunggal, bukan tabel `roles`/`permissions` terpisah, selaras dengan filosofi *Boring Stack* (Bagian 5 PRD) — cukup untuk RBAC sederhana via middleware (FR01.3).
 3. **Isolasi data per RT** (Bagian 6.2 PRD): `family_heads.rt_id` dan `complaints.rt_id` menjadi kunci penerapan *Global Scope* Eloquent agar Ketua RT hanya melihat data wilayahnya.
 4. **`users.resident_id`** bersifat nullable — dipakai saat akun Warga (Viewer) ingin ditautkan ke data kependudukan miliknya sendiri (untuk fitur cek tagihan/status pengaduan pribadi).

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Scopes\RtOwnedThroughFamilyHeadScope;
+use Database\Factories\ResidentFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,27 +13,26 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[ScopedBy([RtOwnedThroughFamilyHeadScope::class])]
+#[Fillable([
+    'family_head_id',
+    'nik',
+    'name',
+    'gender',
+    'birth_place',
+    'birth_date',
+    'is_family_head',
+    'relationship_status',
+    'occupation',
+    'religion',
+    'education',
+    'marital_status',
+    'phone',
+    'photo',
+])]
 class Resident extends Model
 {
-    /** @use HasFactory<\Database\Factories\ResidentFactory> */
+    /** @use HasFactory<ResidentFactory> */
     use HasFactory;
-
-    protected $fillable = [
-        'family_head_id',
-        'nik',
-        'name',
-        'gender',
-        'birth_place',
-        'birth_date',
-        'is_family_head',
-        'relationship_status',
-        'occupation',
-        'religion',
-        'education',
-        'marital_status',
-        'phone',
-        'photo',
-    ];
 
     protected function casts(): array
     {

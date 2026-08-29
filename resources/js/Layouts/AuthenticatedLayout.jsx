@@ -1,176 +1,243 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+const ROLE_LABELS = {
+    super_admin: 'Super Admin',
+    ketua_rw: 'Ketua RW',
+    sekretaris: 'Sekretaris',
+    bendahara: 'Bendahara',
+    ketua_rt: 'Ketua RT',
+    warga: 'Warga',
+};
 
-    const [showingNavigationDropdown, setShowingNavigationDropdown] =
-        useState(false);
+/**
+ * Setiap item hanya tampil untuk role yang terdaftar di `roles`.
+ * Tambahkan route baru di sini begitu modulnya tersedia (Surat, Keuangan, dst).
+ */
+const NAVIGATION = [
+    {
+        name: 'Dashboard',
+        route: 'dashboard',
+        roles: ['super_admin', 'ketua_rw', 'sekretaris', 'bendahara', 'ketua_rt', 'warga'],
+        icon: (
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            />
+        ),
+    },
+    {
+        name: 'Profil RW',
+        route: 'rw.edit',
+        roles: ['super_admin', 'ketua_rw'],
+        icon: (
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"
+            />
+        ),
+    },
+    {
+        name: 'Data RT',
+        route: 'rt.index',
+        roles: ['super_admin', 'ketua_rw'],
+        icon: (
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
+            />
+        ),
+    },
+    {
+        name: 'Kepala Keluarga',
+        route: 'family-heads.index',
+        roles: ['super_admin', 'ketua_rw', 'sekretaris', 'ketua_rt'],
+        icon: (
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+        ),
+    },
+];
+
+function SidebarLink({ item, onNavigate }) {
+    const active = route().current(item.route) || route().current(`${item.route}.*`);
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="border-b border-gray-100 bg-white">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 justify-between">
-                        <div className="flex">
-                            <div className="flex shrink-0 items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
-                                </Link>
-                            </div>
+        <Link
+            href={route(item.route)}
+            onClick={onNavigate}
+            className={
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ' +
+                (active
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900')
+            }
+        >
+            <svg
+                className="h-5 w-5 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.75}
+                stroke="currentColor"
+            >
+                {item.icon}
+            </svg>
+            {item.name}
+        </Link>
+    );
+}
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    Dashboard
-                                </NavLink>
-                            </div>
-                        </div>
+function SidebarContent({ user, onNavigate }) {
+    const items = NAVIGATION.filter(
+        (item) => !item.roles || item.roles.includes(user.role),
+    );
 
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center">
-                            <div className="relative ms-3">
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                            >
-                                                {user.name}
+    return (
+        <div className="flex h-full flex-col">
+            <Link href="/" className="flex items-center gap-2 px-5 py-5">
+                <ApplicationLogo className="block h-8 w-auto fill-current text-emerald-700" />
+                <span className="text-base font-semibold text-gray-900">
+                    SIM-RW
+                </span>
+            </Link>
 
-                                                <svg
-                                                    className="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </Dropdown.Trigger>
+            <nav className="flex-1 space-y-1 px-3">
+                {items.map((item) => (
+                    <SidebarLink key={item.name} item={item} onNavigate={onNavigate} />
+                ))}
+            </nav>
 
-                                    <Dropdown.Content>
-                                        <Dropdown.Link
-                                            href={route('profile.edit')}
-                                        >
-                                            Profile
-                                        </Dropdown.Link>
-                                        <Dropdown.Link
-                                            href={route('logout')}
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
-                            </div>
-                        </div>
+            <div className="border-t border-gray-100 p-4 text-sm text-gray-500">
+                {ROLE_LABELS[user.role] ?? user.role}
+            </div>
+        </div>
+    );
+}
 
-                        <div className="-me-2 flex items-center sm:hidden">
-                            <button
-                                onClick={() =>
-                                    setShowingNavigationDropdown(
-                                        (previousState) => !previousState,
-                                    )
-                                }
-                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
+function FlashMessages() {
+    const flash = usePage().props.flash ?? {};
+
+    if (!flash.success && !flash.error) {
+        return null;
+    }
+
+    return (
+        <div className="mb-4 space-y-2">
+            {flash.success && (
+                <div className="rounded-lg bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                    {flash.success}
+                </div>
+            )}
+            {flash.error && (
+                <div className="rounded-lg bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+                    {flash.error}
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default function AuthenticatedLayout({ header, children }) {
+    const user = usePage().props.auth.user;
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    return (
+        <div className="flex min-h-screen bg-gray-50 text-[15px]">
+            {/* Sidebar (desktop) */}
+            <aside className="hidden w-64 shrink-0 border-r border-gray-100 bg-white lg:block">
+                <SidebarContent user={user} />
+            </aside>
+
+            {/* Sidebar (mobile, collapse otomatis) */}
+            {sidebarOpen && (
+                <div className="fixed inset-0 z-40 lg:hidden">
+                    <div
+                        className="absolute inset-0 bg-gray-900/40"
+                        onClick={() => setSidebarOpen(false)}
+                    />
+                    <aside className="absolute inset-y-0 left-0 w-64 bg-white shadow-xl">
+                        <SidebarContent
+                            user={user}
+                            onNavigate={() => setSidebarOpen(false)}
+                        />
+                    </aside>
+                </div>
+            )}
+
+            <div className="flex min-w-0 flex-1 flex-col">
+                <header className="flex h-16 items-center justify-between border-b border-gray-100 bg-white px-4 sm:px-6">
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setSidebarOpen(true)}
+                            className="rounded-md p-2 text-gray-500 hover:bg-gray-100 lg:hidden"
+                        >
+                            <svg
+                                className="h-6 w-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
                             >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                />
+                            </svg>
+                        </button>
+                        {header}
+                    </div>
+
+                    <Dropdown>
+                        <Dropdown.Trigger>
+                            <button
+                                type="button"
+                                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+                            >
+                                {user.name}
                                 <svg
-                                    className="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
+                                    className="h-4 w-4"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
                                 >
                                     <path
-                                        className={
-                                            !showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        className={
-                                            showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M6 18L18 6M6 6l12 12"
+                                        fillRule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clipRule="evenodd"
                                     />
                                 </svg>
                             </button>
-                        </div>
-                    </div>
-                </div>
+                        </Dropdown.Trigger>
 
-                <div
-                    className={
-                        (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden'
-                    }
-                >
-                    <div className="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-                    </div>
-
-                    <div className="border-t border-gray-200 pb-1 pt-4">
-                        <div className="px-4">
-                            <div className="text-base font-medium text-gray-800">
-                                {user.name}
-                            </div>
-                            <div className="text-sm font-medium text-gray-500">
-                                {user.email}
-                            </div>
-                        </div>
-
-                        <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')}>
-                                Profile
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                method="post"
+                        <Dropdown.Content>
+                            <Dropdown.Link href={route('profile.edit')}>
+                                Profil Saya
+                            </Dropdown.Link>
+                            <Dropdown.Link
                                 href={route('logout')}
+                                method="post"
                                 as="button"
                             >
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            {header && (
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {header}
-                    </div>
+                                Keluar
+                            </Dropdown.Link>
+                        </Dropdown.Content>
+                    </Dropdown>
                 </header>
-            )}
 
-            <main>{children}</main>
+                <main className="flex-1 p-4 sm:p-6">
+                    <FlashMessages />
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }
