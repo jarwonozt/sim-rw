@@ -11,6 +11,7 @@ use App\Http\Controllers\MasterRwController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicAnnouncementController;
 use App\Http\Controllers\ResidentController;
+use App\Http\Controllers\ResidentImportExportController;
 use App\Http\Controllers\ResidentSearchController;
 use App\Http\Controllers\TreasuryCategoryController;
 use App\Http\Controllers\TreasuryController;
@@ -75,6 +76,13 @@ Route::middleware(['auth', 'role:super_admin,ketua_rw,sekretaris,ketua_rt'])->gr
     Route::delete('/residents/{resident}', [ResidentController::class, 'destroy'])
         ->middleware('role:super_admin,ketua_rw,sekretaris')
         ->name('residents.destroy');
+});
+
+// Import/Export Excel data Penduduk (FR02.4) — migrasi data lama & laporan ke kelurahan.
+Route::middleware(['auth', 'role:super_admin,ketua_rw,sekretaris'])->group(function () {
+    Route::get('/residents-export', [ResidentImportExportController::class, 'export'])->name('residents.export');
+    Route::get('/residents-import-template', [ResidentImportExportController::class, 'template'])->name('residents.import-template');
+    Route::post('/residents-import', [ResidentImportExportController::class, 'import'])->name('residents.import');
 });
 
 // Modul Surat Menyurat (FR03) — Bendahara sengaja tidak diberi akses (FR01.3).

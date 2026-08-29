@@ -1,3 +1,4 @@
+import PopulationPyramidChart from '@/Components/PopulationPyramidChart';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
@@ -41,7 +42,7 @@ function StatCard({ statKey, value }) {
     );
 }
 
-export default function Dashboard({ stats }) {
+export default function Dashboard({ stats, populationPyramid }) {
     return (
         <AuthenticatedLayout
             header={
@@ -56,6 +57,15 @@ export default function Dashboard({ stats }) {
                 {Object.keys(CARD_STYLE).map((key) => (
                     <StatCard key={key} statKey={key} value={stats[key]} />
                 ))}
+            </div>
+
+            <div className="mt-6 rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                <h3 className="text-sm font-semibold text-gray-900">
+                    Piramida Penduduk
+                </h3>
+                <div className="mt-4">
+                    <PopulationPyramidChart data={populationPyramid} />
+                </div>
             </div>
         </AuthenticatedLayout>
     );

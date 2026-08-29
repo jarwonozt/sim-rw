@@ -1,12 +1,16 @@
 import Pagination from '@/Components/Pagination';
 import PrimaryButton from '@/Components/PrimaryButton';
+import ResidentImportModal from '@/Components/ResidentImportModal';
+import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Index({ familyHeads, filters }) {
     const [search, setSearch] = useState(filters.search ?? '');
+    const [showImport, setShowImport] = useState(false);
+    const importErrors = usePage().props.flash?.importErrors;
 
     const submitSearch = (e) => {
         e.preventDefault();
@@ -34,10 +38,34 @@ export default function Index({ familyHeads, filters }) {
                     <PrimaryButton type="submit">Cari</PrimaryButton>
                 </form>
 
-                <Link href={route('family-heads.create')}>
-                    <PrimaryButton>+ Tambah KK</PrimaryButton>
-                </Link>
+                <div className="flex gap-2">
+                    <a href={route('residents.export')}>
+                        <SecondaryButton>Export Excel</SecondaryButton>
+                    </a>
+                    <SecondaryButton onClick={() => setShowImport(true)}>
+                        Import Excel
+                    </SecondaryButton>
+                    <Link href={route('family-heads.create')}>
+                        <PrimaryButton>+ Tambah KK</PrimaryButton>
+                    </Link>
+                </div>
             </div>
+
+            {importErrors && importErrors.length > 0 && (
+                <div className="mb-4 rounded-lg bg-amber-50 p-4 text-sm text-amber-800">
+                    <p className="font-medium">
+                        {importErrors.length} baris dilewati saat import:
+                    </p>
+                    <ul className="mt-1 list-inside list-disc space-y-0.5">
+                        {importErrors.slice(0, 10).map((message, index) => (
+                            <li key={index}>{message}</li>
+                        ))}
+                        {importErrors.length > 10 && (
+                            <li>...dan {importErrors.length - 10} lainnya.</li>
+                        )}
+                    </ul>
+                </div>
+            )}
 
             <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
                 <table className="min-w-full divide-y divide-gray-100 text-sm">
@@ -87,6 +115,8 @@ export default function Index({ familyHeads, filters }) {
             <div className="mt-4">
                 <Pagination links={familyHeads.links} />
             </div>
+
+            <ResidentImportModal show={showImport} onClose={() => setShowImport(false)} />
         </AuthenticatedLayout>
     );
 }
