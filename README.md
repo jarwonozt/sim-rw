@@ -1,58 +1,126 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://api.iconify.design/heroicons:cube-transparent-20-solid.svg?color=%230d7c66&height=64" width="64" height="64" alt="SIM-RW">
 </p>
 
-## About Laravel
+<h1 align="center">SIM-RW</h1>
+<p align="center"><strong>Sistem Informasi Manajemen RW</strong> — digitalisasi administrasi kependudukan, surat-menyurat, keuangan, dan pengaduan warga tingkat Rukun Warga.</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  <img src="https://img.shields.io/badge/PHP-8.3%2B-777bb4?logo=php&logoColor=white" alt="PHP 8.3+">
+  <img src="https://img.shields.io/badge/Laravel-13-ff2d20?logo=laravel&logoColor=white" alt="Laravel 13">
+  <img src="https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white" alt="React 18">
+  <img src="https://img.shields.io/badge/Inertia.js-2-9553e9?logo=inertia&logoColor=white" alt="Inertia.js 2">
+  <img src="https://img.shields.io/badge/Tailwind%20CSS-4-38bdf8?logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4">
+  <img src="https://img.shields.io/badge/tests-passing-2ea043" alt="Tests passing">
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tentang Proyek
 
-## Learning Laravel
+Administrasi tingkat RW di Indonesia masih banyak dikerjakan lewat buku tulis dan file Excel yang tercecer — menyulitkan pencarian data historis, penyusunan laporan ke kelurahan, dan transparansi keuangan ke warga. **SIM-RW** adalah sistem informasi *self-hosted* yang menggantikan proses manual tersebut dengan satu aplikasi terpadu, dibangun mengikuti spesifikasi lengkap di [`docs/prd.md`](docs/prd.md) dan skema data di [`docs/erd.md`](docs/erd.md).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Fitur Utama
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Modul | Deskripsi |
+| :--- | :--- |
+| **Manajemen Pengguna (RBAC)** | 6 peran (Super Admin, Ketua RW, Sekretaris, Bendahara, Ketua RT, Warga) dengan hak akses terpisah per middleware. |
+| **Master Data Kependudukan** | Data wilayah RT/RW, Kepala Keluarga, dan Penduduk — isolasi data otomatis per RT lewat *global scope* Eloquent. Import/export massal via Excel. |
+| **Surat Menyurat** | Template surat dengan placeholder dinamis, penerbitan PDF (DomPDF) dengan nomor agenda otomatis, dan buku agenda kronologis. |
+| **Keuangan (Kas RW)** | Pencatatan kas masuk/keluar dengan bukti foto wajib, laporan rekapitulasi per periode, grafik alokasi anggaran, export Excel & PDF. |
+| **Pengaduan Warga** | Alur status berjenjang (Menunggu Verifikasi RT → Diteruskan RW → Proses → Selesai) dengan riwayat dan notifikasi email otomatis. |
+| **Pengumuman** | Publikasi pengumuman dengan tanggal tayang/kadaluarsa; arsip publik dapat diakses tanpa login. |
+| **Dashboard** | Statistik ringkas, piramida penduduk, tren kas bulanan, alokasi anggaran, dan log aktivitas — semua otomatis menyesuaikan hak akses peran yang login. |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Tumpukan Teknologi
 
-## Agentic Development
+| Lapisan | Teknologi |
+| :--- | :--- |
+| Backend | PHP 8.3, Laravel 13 |
+| Frontend | React 18 + Inertia.js 2 + Tailwind CSS 4 |
+| Database | SQLite (default lokal) / MySQL & MariaDB (produksi) |
+| PDF | barryvdh/laravel-dompdf |
+| Excel | maatwebsite/excel (PhpSpreadsheet) |
+| Build Tool | Vite |
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Prasyarat
+
+- PHP ^8.3 dengan ekstensi standar Laravel
+- Composer 2
+- Node.js ^20 dan npm
+- SQLite (bawaan) atau MySQL/MariaDB bila ingin dijalankan di luar SQLite
+
+## Instalasi
 
 ```bash
-composer require laravel/boost --dev
+git clone <url-repository> sim-rw
+cd sim-rw
 
-php artisan boost:install
+composer install
+npm install
+
+cp .env.example .env
+php artisan key:generate
+
+touch database/database.sqlite   # jika memakai SQLite (default)
+php artisan migrate --seed       # mengimpor data wilayah Indonesia + data demo
+
+php artisan storage:link
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Migrasi `--seed` menjalankan dua seeder:
 
-## Contributing
+- **WilayahSeeder** — mengimpor data Provinsi/Kabupaten-Kota/Kecamatan/Kelurahan resmi dari `database/data/*.json` (±93 ribu baris).
+- **DemoSeeder** — membuat satu RW contoh dengan 2 RT, data KK/Penduduk, template surat, kategori kas, serta akun demo untuk setiap peran (lihat tabel di bawah).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Menjalankan Aplikasi
 
-## Code of Conduct
+Jalankan server, queue listener, dan Vite dev server sekaligus:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer run dev
+```
 
-## Security Vulnerabilities
+Atau secara terpisah:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan serve
+npm run dev
+```
 
-## License
+Aplikasi dapat diakses di `http://localhost:8000`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Akun Demo
+
+Semua akun memakai password **`password`**.
+
+| Email | Peran |
+| :--- | :--- |
+| `superadmin@sim-rw.test` | Super Admin |
+| `ketuarw@sim-rw.test` | Ketua RW |
+| `sekretaris@sim-rw.test` | Sekretaris |
+| `bendahara@sim-rw.test` | Bendahara |
+| `ketuart1@sim-rw.test` | Ketua RT 001 |
+| `ketuart2@sim-rw.test` | Ketua RT 002 |
+| `warga@sim-rw.test` | Warga |
+
+## Pengujian & Kualitas Kode
+
+```bash
+php artisan test              # jalankan seluruh test suite (PHPUnit)
+vendor/bin/pint                # cek format kode
+vendor/bin/pint --dirty        # format ulang file yang berubah
+```
+
+## Dokumentasi
+
+- [`docs/prd.md`](docs/prd.md) — Product Requirement Document lengkap (latar belakang, ruang lingkup, functional & non-functional requirements, roadmap).
+- [`docs/erd.md`](docs/erd.md) — Entity Relationship Diagram skema database.
+
+## Roadmap
+
+Fase 1–3 (Master Data, Surat Menyurat, Keuangan, Pengaduan & Pengumuman) sudah terimplementasi. Rencana Fase 4/V2 meliputi modul Siskamling, Inventaris, integrasi WhatsApp Gateway, dan dukungan PWA — lihat Bagian 8 pada [`docs/prd.md`](docs/prd.md) untuk detail.
+
+## Lisensi
+
+Proyek ini dikembangkan untuk kebutuhan internal pengurus RW dan dibangun di atas [framework Laravel](https://laravel.com) yang bersifat open-source (MIT).
