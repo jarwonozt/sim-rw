@@ -9,6 +9,7 @@ use App\Models\Resident;
 use App\Models\User;
 use App\Notifications\ComplaintResolvedNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
@@ -142,5 +143,29 @@ class ComplaintTest extends TestCase
 
         $this->assertDatabaseHas('complaints', ['id' => $complaint->id, 'status' => 'selesai']);
         Notification::assertSentTo($warga, ComplaintResolvedNotification::class);
+    }
+
+    public function test_marking_a_complaint_resolved_sends_a_whatsapp_message_via_fonnte(): void
+    {
+        config(['services.fonnte.token' => 'test-token']);
+        Http::fake(['api.fonnte.com/*' => Http::response(['status' => true], 200)]);
+
+        $ketuaRw = User::factory()->role('ketua_rw')->create();
+        $rt = MasterRt::factory()->create();
+        $warga = $this->wargaWithResident($rt);
+        $complaint = Complaint::factory()->create([
+            'user_id' => $warga->id,
+            'rt_id' => $rt->id,
+            'status' => 'proses',
+            'title' => 'Sampah menumpuk',
+        ]);
+
+        $this->actingAs($ketuaRw)->patch(route('complaints.update-status', $complaint));
+
+        Http::assertSent(function ($request) use ($warga) {
+            return str_contains($request->url(), 'api.fonnte.com')
+                && str_contains($request['message'], 'Sampah menumpuk')
+                && str_contains($request['message'], $warga->name);
+        });
     }
 }

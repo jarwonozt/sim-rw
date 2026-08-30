@@ -231,7 +231,7 @@ function FlashMessages() {
     return (
         <div className="mb-6 space-y-2">
             {flash.success && (
-                <div className="rounded-2xl border-l-4 border-primary bg-primary/5 px-4 py-3 text-sm font-medium text-primary">
+                <div className="rounded-xl border-1 border-primary bg-primary/5 px-4 py-3 text-sm font-medium text-primary">
                     {flash.success}
                 </div>
             )}

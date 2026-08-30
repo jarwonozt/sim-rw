@@ -28,7 +28,7 @@ Administrasi tingkat RW di Indonesia masih banyak dikerjakan lewat buku tulis da
 | **Master Data Kependudukan** | Data wilayah RT/RW, Kepala Keluarga, dan Penduduk — isolasi data otomatis per RT lewat *global scope* Eloquent. Import/export massal via Excel. |
 | **Surat Menyurat** | Template surat dengan placeholder dinamis, penerbitan PDF (DomPDF) dengan nomor agenda otomatis, dan buku agenda kronologis. |
 | **Keuangan (Kas RW)** | Pencatatan kas masuk/keluar dengan bukti foto wajib, laporan rekapitulasi per periode, grafik alokasi anggaran, export Excel & PDF. |
-| **Pengaduan Warga** | Alur status berjenjang (Menunggu Verifikasi RT → Diteruskan RW → Proses → Selesai) dengan riwayat dan notifikasi email otomatis. |
+| **Pengaduan Warga** | Alur status berjenjang (Menunggu Verifikasi RT → Diteruskan RW → Proses → Selesai) dengan riwayat serta notifikasi otomatis via Email dan WhatsApp (Fonnte) saat pengaduan selesai. |
 | **Pengumuman** | Publikasi pengumuman dengan tanggal tayang/kadaluarsa; arsip publik dapat diakses tanpa login. |
 | **Dashboard** | Statistik ringkas, piramida penduduk, tren kas bulanan, alokasi anggaran, dan log aktivitas — semua otomatis menyesuaikan hak akses peran yang login. |
 
@@ -41,6 +41,7 @@ Administrasi tingkat RW di Indonesia masih banyak dikerjakan lewat buku tulis da
 | Database | SQLite (default lokal) / MySQL & MariaDB (produksi) |
 | PDF | barryvdh/laravel-dompdf |
 | Excel | maatwebsite/excel (PhpSpreadsheet) |
+| WhatsApp Gateway | [Fonnte](https://fonnte.com) |
 | Build Tool | Vite |
 
 ## Prasyarat
@@ -72,6 +73,16 @@ Migrasi `--seed` menjalankan dua seeder:
 
 - **WilayahSeeder** — mengimpor data Provinsi/Kabupaten-Kota/Kecamatan/Kelurahan resmi dari `database/data/*.json` (±93 ribu baris).
 - **DemoSeeder** — membuat satu RW contoh dengan 2 RT, data KK/Penduduk, template surat, kategori kas, serta akun demo untuk setiap peran (lihat tabel di bawah).
+
+### Notifikasi WhatsApp (opsional)
+
+Notifikasi pengaduan selesai bisa terkirim otomatis via WhatsApp memakai [Fonnte](https://fonnte.com). Isi variabel berikut di `.env` dengan token device Fonnte milikmu:
+
+```env
+FONNTE_TOKEN=isi-token-fonnte-di-sini
+```
+
+Bila `FONNTE_TOKEN` kosong, pengiriman WhatsApp otomatis dilewati (dicatat di log) tanpa mengganggu alur aplikasi — notifikasi email tetap berjalan seperti biasa.
 
 ## Menjalankan Aplikasi
 
@@ -119,7 +130,7 @@ vendor/bin/pint --dirty        # format ulang file yang berubah
 
 ## Roadmap
 
-Fase 1–3 (Master Data, Surat Menyurat, Keuangan, Pengaduan & Pengumuman) sudah terimplementasi. Rencana Fase 4/V2 meliputi modul Siskamling, Inventaris, integrasi WhatsApp Gateway, dan dukungan PWA — lihat Bagian 8 pada [`docs/prd.md`](docs/prd.md) untuk detail.
+Fase 1–3 (Master Data, Surat Menyurat, Keuangan, Pengaduan & Pengumuman) sudah terimplementasi, termasuk notifikasi WhatsApp yang semula direncanakan di Fase 4. Sisa rencana Fase 4/V2 meliputi modul Siskamling, Inventaris, dan dukungan PWA — lihat Bagian 8 pada [`docs/prd.md`](docs/prd.md) untuk detail.
 
 ## Lisensi
 

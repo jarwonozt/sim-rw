@@ -11,6 +11,7 @@ use App\Http\Controllers\MasterRwController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicAnnouncementController;
 use App\Http\Controllers\ResidentController;
+use App\Http\Controllers\ResidentProfileController;
 use App\Http\Controllers\ResidentImportExportController;
 use App\Http\Controllers\ResidentSearchController;
 use App\Http\Controllers\TreasuryCategoryController;
@@ -119,6 +120,13 @@ Route::middleware(['auth', 'role:super_admin,ketua_rw,ketua_rt,warga'])->group(f
 // Modul Pengumuman (FR06.1) — hanya Super Admin & Ketua RW yang menerbitkan.
 Route::middleware(['auth', 'role:super_admin,ketua_rw'])->group(function () {
     Route::resource('announcements', AnnouncementController::class)->except(['show']);
+});
+
+// "Data Saya" — Warga melihat & memperbarui data kependudukannya sendiri
+// (kontak/non-identitas saja, lihat UpdateOwnResidentRequest).
+Route::middleware(['auth', 'role:warga'])->group(function () {
+    Route::get('/data-saya', [ResidentProfileController::class, 'edit'])->name('resident-profile.edit');
+    Route::put('/data-saya', [ResidentProfileController::class, 'update'])->name('resident-profile.update');
 });
 
 require __DIR__.'/auth.php';

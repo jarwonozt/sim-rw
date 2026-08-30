@@ -8,17 +8,30 @@ import TextareaInput from '@/Components/TextareaInput';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-function TemplateFormModal({ show, onClose, template, placeholders }) {
-    const isEditing = Boolean(template);
-
-    const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
+function valuesFromTemplate(template) {
+    return {
         name: template?.name ?? '',
         type: template?.type ?? '',
         content: template?.content ?? '',
         is_active: template?.is_active ?? true,
-    });
+    };
+}
+
+function TemplateFormModal({ show, onClose, template, placeholders }) {
+    const isEditing = Boolean(template);
+
+    const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm(
+        valuesFromTemplate(template),
+    );
+
+    // Modal ini tetap ter-mount di belakang layar (cuma `show` yang berubah),
+    // jadi perlu di-resync manual tiap kali template yang diedit berganti.
+    useEffect(() => {
+        setData(valuesFromTemplate(template));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [template]);
 
     const close = () => {
         reset();

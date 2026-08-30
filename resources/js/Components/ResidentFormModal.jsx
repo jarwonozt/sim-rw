@@ -7,6 +7,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
+import { useEffect } from 'react';
 
 const EMPTY_FORM = {
     nik: '',
@@ -23,27 +24,39 @@ const EMPTY_FORM = {
     phone: '',
 };
 
+function valuesFromResident(resident) {
+    return resident
+        ? {
+              nik: resident.nik,
+              name: resident.name,
+              gender: resident.gender,
+              birth_place: resident.birth_place ?? '',
+              birth_date: resident.birth_date ? resident.birth_date.slice(0, 10) : '',
+              is_family_head: resident.is_family_head,
+              relationship_status: resident.relationship_status ?? '',
+              occupation: resident.occupation ?? '',
+              religion: resident.religion ?? '',
+              education: resident.education ?? '',
+              marital_status: resident.marital_status ?? '',
+              phone: resident.phone ?? '',
+          }
+        : EMPTY_FORM;
+}
+
 export default function ResidentFormModal({ show, onClose, resident, familyHeadId }) {
     const isEditing = Boolean(resident);
 
     const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm(
-        resident
-            ? {
-                  nik: resident.nik,
-                  name: resident.name,
-                  gender: resident.gender,
-                  birth_place: resident.birth_place ?? '',
-                  birth_date: resident.birth_date ? resident.birth_date.slice(0, 10) : '',
-                  is_family_head: resident.is_family_head,
-                  relationship_status: resident.relationship_status ?? '',
-                  occupation: resident.occupation ?? '',
-                  religion: resident.religion ?? '',
-                  education: resident.education ?? '',
-                  marital_status: resident.marital_status ?? '',
-                  phone: resident.phone ?? '',
-              }
-            : EMPTY_FORM,
+        valuesFromResident(resident),
     );
+
+    // Modal ini tetap ter-mount di belakang layar (cuma `show` yang berubah),
+    // jadi useForm() di atas hanya jalan sekali saat mount pertama. Tanpa
+    // effect ini, buka modal utk penduduk lain akan menampilkan data lama/kosong.
+    useEffect(() => {
+        setData(valuesFromResident(resident));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [resident]);
 
     const close = () => {
         reset();

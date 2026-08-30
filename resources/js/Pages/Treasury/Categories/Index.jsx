@@ -8,15 +8,28 @@ import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+function valuesFromCategory(category) {
+    return {
+        name: category?.name ?? '',
+        type: category?.type ?? 'in',
+    };
+}
 
 function CategoryFormModal({ show, onClose, category }) {
     const isEditing = Boolean(category);
 
-    const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
-        name: category?.name ?? '',
-        type: category?.type ?? 'in',
-    });
+    const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm(
+        valuesFromCategory(category),
+    );
+
+    // Modal ini tetap ter-mount di belakang layar (cuma `show` yang berubah),
+    // jadi perlu di-resync manual tiap kali kategori yang diedit berganti.
+    useEffect(() => {
+        setData(valuesFromCategory(category));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [category]);
 
     const close = () => {
         reset();

@@ -80,4 +80,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Complaint::class);
     }
+
+    /**
+     * Nomor tujuan untuk notifikasi via FonnteChannel, diambil dari data
+     * Penduduk yang terhubung ke akun ini. Null berarti dilewati.
+     */
+    public function routeNotificationForFonnte(): ?string
+    {
+        return $this->resident?->phone;
+    }
 }
