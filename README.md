@@ -30,6 +30,9 @@ Administrasi tingkat RW di Indonesia masih banyak dikerjakan lewat buku tulis da
 | **Keuangan (Kas RW)** | Pencatatan kas masuk/keluar dengan bukti foto wajib, laporan rekapitulasi per periode, grafik alokasi anggaran, export Excel & PDF. |
 | **Pengaduan Warga** | Alur status berjenjang (Menunggu Verifikasi RT → Diteruskan RW → Proses → Selesai) dengan riwayat serta notifikasi otomatis via Email dan WhatsApp (Fonnte) saat pengaduan selesai. |
 | **Pengumuman** | Publikasi pengumuman dengan tanggal tayang/kadaluarsa; arsip publik dapat diakses tanpa login. |
+| **Broadcast & Template WhatsApp** | Kirim pesan massal ke penduduk (semua RT atau RT tertentu) via Fonnte, dengan template pesan siap-pakai dan riwayat pengiriman. Template yang sama juga bisa dipasang otomatis ke notifikasi sistem (mis. pengaduan selesai). |
+| **Data Saya (Warga)** | Warga login dan memperbarui data kontaknya sendiri (No. HP, pekerjaan, pendidikan, dll) tanpa perlu lewat pengurus RW; data identitas resmi tetap terkunci. |
+| **Inventaris** | Kelola barang inventaris RW/RT (kode otomatis, kategori, kondisi), catat peminjaman-pengembalian warga dengan validasi stok, dan laporan ringkas per kategori/RT. Lihat [`docs/issues/001-modul-inventaris.md`](docs/issues/001-modul-inventaris.md). |
 | **Dashboard** | Statistik ringkas, piramida penduduk, tren kas bulanan, alokasi anggaran, dan log aktivitas — semua otomatis menyesuaikan hak akses peran yang login. |
 
 ## Tumpukan Teknologi

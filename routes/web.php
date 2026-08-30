@@ -4,6 +4,10 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FamilyHeadController;
+use App\Http\Controllers\InventoryCategoryController;
+use App\Http\Controllers\InventoryItemController;
+use App\Http\Controllers\InventoryLoanController;
+use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\LetterController;
 use App\Http\Controllers\LetterTemplateController;
 use App\Http\Controllers\MasterRtController;
@@ -11,12 +15,14 @@ use App\Http\Controllers\MasterRwController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicAnnouncementController;
 use App\Http\Controllers\ResidentController;
-use App\Http\Controllers\ResidentProfileController;
 use App\Http\Controllers\ResidentImportExportController;
+use App\Http\Controllers\ResidentProfileController;
 use App\Http\Controllers\ResidentSearchController;
 use App\Http\Controllers\TreasuryCategoryController;
 use App\Http\Controllers\TreasuryController;
 use App\Http\Controllers\TreasuryReportController;
+use App\Http\Controllers\WhatsappBroadcastController;
+use App\Http\Controllers\WhatsappTemplateController;
 use App\Http\Controllers\WilayahController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -83,10 +89,12 @@ Route::middleware(['auth', 'role:super_admin,ketua_rw,sekretaris'])->group(funct
     Route::post('/residents-import', [ResidentImportExportController::class, 'import'])->name('residents.import');
 });
 
+// Pencarian cepat penduduk (combobox Surat & Peminjaman Inventaris).
+Route::middleware(['auth', 'role:super_admin,ketua_rw,sekretaris,ketua_rt'])
+    ->get('/residents/search', ResidentSearchController::class)->name('residents.search');
+
 // Modul Surat Menyurat (FR03) — Bendahara sengaja tidak diberi akses (FR01.3).
 Route::middleware(['auth', 'role:super_admin,ketua_rw,sekretaris'])->group(function () {
-    Route::get('/residents/search', ResidentSearchController::class)->name('residents.search');
-
     Route::resource('letter-templates', LetterTemplateController::class)
         ->parameters(['letter-templates' => 'letterTemplate'])
         ->only(['index', 'store', 'update', 'destroy']);
@@ -127,6 +135,41 @@ Route::middleware(['auth', 'role:super_admin,ketua_rw'])->group(function () {
 Route::middleware(['auth', 'role:warga'])->group(function () {
     Route::get('/data-saya', [ResidentProfileController::class, 'edit'])->name('resident-profile.edit');
     Route::put('/data-saya', [ResidentProfileController::class, 'update'])->name('resident-profile.update');
+});
+
+// Modul Inventaris (FR08) — kategori hanya dikelola Sekretaris/Ketua RW
+// (docs/issues/001-modul-inventaris.md#4); Bendahara sengaja tidak diberi akses.
+Route::middleware(['auth', 'role:super_admin,ketua_rw,sekretaris'])->group(function () {
+    Route::resource('inventory-categories', InventoryCategoryController::class)
+        ->parameters(['inventory-categories' => 'inventoryCategory'])
+        ->only(['index', 'store', 'update', 'destroy']);
+});
+
+// Modul Inventaris: Barang & Peminjaman — Ketua RT ikut diberi akses untuk
+// mengelola barang/peminjaman miliknya sendiri (RtOwnedScope, lihat
+// app/Models/Scopes/RtOwnedThroughInventoryItemScope.php).
+Route::middleware(['auth', 'role:super_admin,ketua_rw,sekretaris,ketua_rt'])->group(function () {
+    Route::resource('inventory-items', InventoryItemController::class)
+        ->parameters(['inventory-items' => 'inventoryItem'])
+        ->except(['show']);
+
+    Route::resource('inventory-loans', InventoryLoanController::class)
+        ->parameters(['inventory-loans' => 'inventoryLoan'])
+        ->only(['index', 'create', 'store', 'show']);
+    Route::patch('/inventory-loans/{inventoryLoan}/return', [InventoryLoanController::class, 'returnItem'])->name('inventory-loans.return');
+
+    Route::get('/inventory-report', [InventoryReportController::class, 'index'])->name('inventory-report.index');
+});
+
+// WhatsApp: Broadcast & Template Notifikasi — hanya Super Admin & Ketua RW,
+// setara dengan hak menerbitkan Pengumuman.
+Route::middleware(['auth', 'role:super_admin,ketua_rw'])->group(function () {
+    Route::get('/whatsapp-broadcast', [WhatsappBroadcastController::class, 'index'])->name('whatsapp-broadcast.index');
+    Route::post('/whatsapp-broadcast', [WhatsappBroadcastController::class, 'store'])->name('whatsapp-broadcast.store');
+
+    Route::resource('whatsapp-templates', WhatsappTemplateController::class)
+        ->parameters(['whatsapp-templates' => 'whatsappTemplate'])
+        ->only(['index', 'store', 'update', 'destroy']);
 });
 
 require __DIR__.'/auth.php';

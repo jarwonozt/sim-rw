@@ -13,6 +13,7 @@ use App\Models\Treasury;
 use App\Models\TreasuryCategory;
 use App\Models\User;
 use App\Models\Village;
+use App\Models\WhatsappTemplate;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -187,6 +188,63 @@ class DemoSeeder extends Seeder
             'created_by' => $ketuaRw->id,
         ]);
 
+        $this->seedWhatsappTemplates();
+
         $this->command?->info("Demo siap. Login sebagai: {$superAdmin->email}, {$ketuaRw->email}, {$sekretaris->email}, {$demoWarga->email}, dst. Password: password");
+    }
+
+    /**
+     * Template pesan WhatsApp yang umum dipakai pengurus RW sehari-hari —
+     * satu di antaranya (event_key "complaint_resolved") otomatis dipasang
+     * ke notifikasi sistem, sisanya siap dipakai lewat menu Broadcast.
+     */
+    private function seedWhatsappTemplates(): void
+    {
+        $templates = [
+            [
+                'name' => 'Notifikasi Pengaduan Selesai',
+                'event_key' => 'complaint_resolved',
+                'content' => "Halo [nama_warga] 👋\n\nPengaduan Anda \"[judul_pengaduan]\" telah *selesai* ditindaklanjuti oleh pengurus RW.\n\nTerima kasih atas partisipasi Anda menjaga lingkungan RW. 🙏",
+            ],
+            [
+                'name' => 'Pengingat Iuran Bulanan',
+                'event_key' => null,
+                'content' => "Assalamu'alaikum Bapak/Ibu [nama_warga] 🙏\n\nMengingatkan pembayaran iuran warga RT [nomor_rt]/RW [nomor_rw] bulan ini. Pembayaran dapat dilakukan melalui Bendahara RW paling lambat tanggal 10.\n\nTerima kasih atas kerja samanya. 🏡",
+            ],
+            [
+                'name' => 'Undangan Kerja Bakti',
+                'event_key' => null,
+                'content' => "Assalamu'alaikum warga RT [nomor_rt]/RW [nomor_rw] 🙏\n\nDimohon partisipasinya untuk kerja bakti bersama pada:\n📅 Minggu, pukul 07.00 WIB\n📍 Halaman balai warga\n\nMohon membawa alat kebersihan masing-masing. Terima kasih! 💪",
+            ],
+            [
+                'name' => 'Undangan Rapat RW',
+                'event_key' => null,
+                'content' => "Assalamu'alaikum Bapak/Ibu [nama_warga] 🙏\n\nDimohon kehadirannya dalam rapat warga RT [nomor_rt]/RW [nomor_rw] untuk membahas agenda penting lingkungan.\n\nMohon hadir tepat waktu. Terima kasih 🙏",
+            ],
+            [
+                'name' => 'Jadwal Ronda/Siskamling',
+                'event_key' => null,
+                'content' => "Halo [nama_warga] 👮\n\nMengingatkan jadwal ronda malam Anda di RT [nomor_rt] besok malam. Mohon hadir tepat waktu demi keamanan bersama.\n\nTerima kasih atas kontribusinya menjaga lingkungan. 🙏",
+            ],
+            [
+                'name' => 'Info Darurat/Keamanan',
+                'event_key' => null,
+                'content' => "🚨 *INFO KEAMANAN* 🚨\n\nWarga RT [nomor_rt]/RW [nomor_rw] dimohon waspada dan meningkatkan kewaspadaan keamanan lingkungan. Segera laporkan ke pengurus RT/RW jika ada hal mencurigakan.\n\nJaga selalu keamanan bersama. 🙏",
+            ],
+            [
+                'name' => 'Info Pemadaman Listrik/Air',
+                'event_key' => null,
+                'content' => "*INFORMASI* ⚡\n\nAkan ada pemadaman listrik/air sementara di wilayah RT [nomor_rt]/RW [nomor_rw] untuk keperluan pemeliharaan. Mohon Bapak/Ibu [nama_warga] mempersiapkan diri.\n\nMohon maaf atas ketidaknyamanannya. 🙏",
+            ],
+            [
+                'name' => 'Ucapan Selamat Hari Raya',
+                'event_key' => null,
+                'content' => "Assalamu'alaikum Warahmatullahi Wabarakatuh 🌙✨\n\nSegenap pengurus RW [nomor_rw] mengucapkan *Selamat Hari Raya Idul Fitri* kepada Bapak/Ibu [nama_warga]. Mohon maaf lahir dan batin.\n\nSemoga kita semua kembali fitri. Aamiin 🤲",
+            ],
+        ];
+
+        foreach ($templates as $template) {
+            WhatsappTemplate::factory()->create($template);
+        }
     }
 }
