@@ -5,6 +5,9 @@ namespace Database\Seeders;
 use App\Models\Announcement;
 use App\Models\Complaint;
 use App\Models\FamilyHead;
+use App\Models\InventoryCategory;
+use App\Models\InventoryItem;
+use App\Models\InventoryLoan;
 use App\Models\LetterTemplate;
 use App\Models\MasterRt;
 use App\Models\MasterRw;
@@ -189,6 +192,7 @@ class DemoSeeder extends Seeder
         ]);
 
         $this->seedWhatsappTemplates();
+        $this->seedInventory($sekretaris, $ketuaRw, $rt1, $rt2, $demoResident);
 
         $this->command?->info("Demo siap. Login sebagai: {$superAdmin->email}, {$ketuaRw->email}, {$sekretaris->email}, {$demoWarga->email}, dst. Password: password");
     }
@@ -246,5 +250,112 @@ class DemoSeeder extends Seeder
         foreach ($templates as $template) {
             WhatsappTemplate::factory()->create($template);
         }
+    }
+
+    /**
+     * Data contoh modul Inventaris (docs/issues/001-modul-inventaris.md):
+     * barang milik RW pusat & per-RT, plus riwayat peminjaman yang mencakup
+     * status dipinjam, terlambat, dikembalikan, dan hilang.
+     */
+    private function seedInventory(User $sekretaris, User $ketuaRw, MasterRt $rt1, MasterRt $rt2, Resident $demoResident): void
+    {
+        $categories = collect(['Peralatan Acara', 'Elektronik', 'Kebersihan', 'Furnitur'])
+            ->mapWithKeys(fn (string $name) => [$name => InventoryCategory::factory()->create(['name' => $name])]);
+
+        $year = now()->year;
+        $sequence = 0;
+        $nextCode = function () use (&$sequence, $year) {
+            $sequence++;
+
+            return sprintf('INV-%d-%04d', $year, $sequence);
+        };
+
+        $itemDefinitions = [
+            ['name' => 'Kursi Lipat', 'category' => 'Peralatan Acara', 'rt_id' => null, 'quantity' => 50, 'location' => 'Gudang Balai RW'],
+            ['name' => 'Tenda Pesta 4x6', 'category' => 'Peralatan Acara', 'rt_id' => null, 'quantity' => 4, 'location' => 'Gudang Balai RW'],
+            ['name' => 'Meja Panjang Lipat', 'category' => 'Peralatan Acara', 'rt_id' => null, 'quantity' => 10, 'location' => 'Gudang Balai RW'],
+            ['name' => 'Sound System Portable', 'category' => 'Elektronik', 'rt_id' => null, 'quantity' => 2, 'location' => 'Ruang Sekretariat RW'],
+            ['name' => 'Genset 2000 Watt', 'category' => 'Elektronik', 'rt_id' => null, 'quantity' => 1, 'location' => 'Gudang Balai RW', 'condition' => 'rusak_ringan', 'notes' => 'Perlu servis karburator.'],
+            ['name' => 'Karpet Permadani', 'category' => 'Furnitur', 'rt_id' => null, 'quantity' => 20, 'location' => 'Gudang Balai RW'],
+            ['name' => 'Terpal', 'category' => 'Kebersihan', 'rt_id' => $rt1->id, 'quantity' => 5, 'location' => 'Pos Ronda RT 001'],
+            ['name' => 'Cangkul', 'category' => 'Kebersihan', 'rt_id' => $rt1->id, 'quantity' => 8, 'location' => 'Pos Ronda RT 001'],
+            ['name' => 'Sapu Lidi', 'category' => 'Kebersihan', 'rt_id' => $rt2->id, 'quantity' => 15, 'location' => 'Pos Ronda RT 002'],
+            ['name' => 'Gerobak Sampah', 'category' => 'Kebersihan', 'rt_id' => $rt2->id, 'quantity' => 2, 'location' => 'Pos Ronda RT 002'],
+        ];
+
+        $items = collect($itemDefinitions)->mapWithKeys(fn (array $definition) => [
+            $definition['name'] => InventoryItem::factory()->create([
+                'inventory_category_id' => $categories[$definition['category']]->id,
+                'rt_id' => $definition['rt_id'],
+                'code' => $nextCode(),
+                'name' => $definition['name'],
+                'quantity' => $definition['quantity'],
+                'condition' => $definition['condition'] ?? 'baik',
+                'location' => $definition['location'],
+                'notes' => $definition['notes'] ?? null,
+                'created_by' => $sekretaris->id,
+            ]),
+        ]);
+
+        // Sedang dipinjam: warga demo pinjam kursi untuk hajatan.
+        InventoryLoan::factory()->create([
+            'inventory_item_id' => $items['Kursi Lipat']->id,
+            'resident_id' => $demoResident->id,
+            'borrower_name' => $demoResident->name,
+            'borrower_phone' => $demoResident->phone,
+            'quantity_borrowed' => 15,
+            'purpose' => 'Hajatan pernikahan keluarga',
+            'loan_date' => now()->subDays(2)->toDateString(),
+            'due_date' => now()->addDays(3)->toDateString(),
+            'status' => 'dipinjam',
+            'handled_by' => $sekretaris->id,
+        ]);
+
+        // Sedang dipinjam & sudah lewat jatuh tempo (tampil "Terlambat" di laporan).
+        InventoryLoan::factory()->create([
+            'inventory_item_id' => $items['Sound System Portable']->id,
+            'borrower_name' => 'Karang Taruna RW 001',
+            'borrower_phone' => '081298765432',
+            'quantity_borrowed' => 1,
+            'purpose' => 'Acara pentas seni',
+            'loan_date' => now()->subDays(10)->toDateString(),
+            'due_date' => now()->subDays(3)->toDateString(),
+            'status' => 'dipinjam',
+            'handled_by' => $sekretaris->id,
+        ]);
+
+        // Riwayat: sudah dikembalikan tepat waktu dalam kondisi baik.
+        InventoryLoan::factory()->create([
+            'inventory_item_id' => $items['Tenda Pesta 4x6']->id,
+            'borrower_name' => 'Panitia 17 Agustus RT 001',
+            'borrower_phone' => '081234567890',
+            'quantity_borrowed' => 1,
+            'purpose' => 'Perayaan HUT RI',
+            'loan_date' => now()->subDays(20)->toDateString(),
+            'due_date' => now()->subDays(17)->toDateString(),
+            'return_date' => now()->subDays(16)->toDateString(),
+            'returned_condition' => 'baik',
+            'status' => 'dikembalikan',
+            'handled_by' => $ketuaRw->id,
+            'notes' => 'Dikembalikan tepat waktu, kondisi baik.',
+        ]);
+
+        // Riwayat: hilang saat dipinjam — jumlah barang dikurangi permanen,
+        // meniru efek samping InventoryLoanController::returnItem().
+        InventoryLoan::factory()->create([
+            'inventory_item_id' => $items['Cangkul']->id,
+            'borrower_name' => 'Pak Slamet',
+            'borrower_phone' => '081211112222',
+            'quantity_borrowed' => 1,
+            'purpose' => 'Kerja bakti bersih got',
+            'loan_date' => now()->subDays(30)->toDateString(),
+            'due_date' => now()->subDays(28)->toDateString(),
+            'return_date' => now()->subDays(25)->toDateString(),
+            'returned_condition' => 'hilang',
+            'status' => 'hilang',
+            'handled_by' => $sekretaris->id,
+            'notes' => 'Dilaporkan hilang, tidak dikembalikan.',
+        ]);
+        $items['Cangkul']->decrement('quantity');
     }
 }
