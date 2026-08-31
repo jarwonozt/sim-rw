@@ -92,13 +92,7 @@ const NAVIGATION = [
     {
         name: 'Kas',
         roles: ['super_admin', 'ketua_rw', 'bendahara'],
-        icon: (
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-        ),
+        icon: 'Rp',
         children: [
             {
                 name: 'Kas Masuk & Keluar',
@@ -217,6 +211,28 @@ function isRouteActive(routeName) {
     return route().current(`${routePrefix}.*`) || route().current(routePrefix);
 }
 
+function SidebarIcon({ icon }) {
+    if (typeof icon === 'string') {
+        return (
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-current text-[9px] leading-none font-bold">
+                {icon}
+            </span>
+        );
+    }
+
+    return (
+        <svg
+            className="h-5 w-5 shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.75}
+            stroke="currentColor"
+        >
+            {icon}
+        </svg>
+    );
+}
+
 function SidebarLink({ item, onNavigate }) {
     const active = isRouteActive(item.route);
 
@@ -231,17 +247,7 @@ function SidebarLink({ item, onNavigate }) {
                     : 'text-slate-600 hover:bg-white/70 hover:text-slate-900')
             }
         >
-            {item.icon && (
-                <svg
-                    className="h-5 w-5 shrink-0"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.75}
-                    stroke="currentColor"
-                >
-                    {item.icon}
-                </svg>
-            )}
+            {item.icon && <SidebarIcon icon={item.icon} />}
             {item.name}
         </Link>
     );
@@ -270,15 +276,7 @@ function SidebarGroup({ item, user, onNavigate }) {
                         : 'text-slate-600 hover:bg-white/70 hover:text-slate-900')
                 }
             >
-                <svg
-                    className="h-5 w-5 shrink-0"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.75}
-                    stroke="currentColor"
-                >
-                    {item.icon}
-                </svg>
+                <SidebarIcon icon={item.icon} />
                 <span className="flex-1 text-left">{item.name}</span>
                 <svg
                     className={
