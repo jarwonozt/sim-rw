@@ -121,9 +121,11 @@ class ApiAccessTest extends TestCase
         );
         $plainTextToken = session('newApiToken');
 
-        fwrite(STDERR, "\nsekretaris id={$sekretaris->id} email={$sekretaris->email}\n");
-        fwrite(STDERR, 'token='.var_export($plainTextToken, true)."\n");
-        fwrite(STDERR, 'db rows='.json_encode(\Laravel\Sanctum\PersonalAccessToken::query()->get()->toArray())."\n");
+        // Sanctum's guard checks the `web` session guard before the bearer
+        // token (config('sanctum.guard')) — lepas guard super_admin dari
+        // actingAs() di atas dulu, supaya request berikutnya benar-benar
+        // diautentikasi lewat token, bukan sesi web yang masih membekas.
+        $this->app['auth']->forgetGuards();
 
         $this->withToken($plainTextToken)->getJson(route('api.v1.user'))
             ->assertOk()
