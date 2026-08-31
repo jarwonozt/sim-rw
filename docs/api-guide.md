@@ -18,7 +18,7 @@ Dokumen ini adalah panduan praktis untuk developer yang mengonsumsi API (mis. ap
 Ada dua cara mendapatkan token, tergantung kebutuhan:
 
 - **Aplikasi mobile warga (produksi):** pakai alur login di bawah (2.1) — token dikaitkan ke akun yang login lewat form aplikasi.
-- **Developer/testing atau integrasi server-to-server:** login sebagai **Super Admin** ke dashboard web lalu buka **Profil Saya → Token API** untuk membuat token bernama tanpa perlu memanggil endpoint login berulang kali. Menu ini sengaja dibatasi khusus Super Admin (`role:super_admin` di `routes/web.php`) karena token yang diterbitkan langsung punya akses penuh sesuai akun tersebut. Token ditampilkan **satu kali saat dibuat** — salin segera, dan cabut lewat halaman yang sama kalau sudah tidak dipakai.
+- **Developer/testing atau integrasi server-to-server:** login sebagai **Super Admin** ke dashboard web lalu buka menu **Manajemen Akses API** (`/manajemen-akses-api`, khusus Super Admin). Di sana Super Admin menambahkan akun untuk developer/integrasi tersebut — bisa membuat akun baru (nama, email, password, peran) atau memilih akun yang sudah ada di sistem — lalu menerbitkan token bernama untuk akun itu. Hak akses token mengikuti peran akun yang dipilih (RBAC di Bagian 1), bukan peran Super Admin yang menerbitkannya. Token ditampilkan **satu kali saat diterbitkan** — salin segera, dan cabut lewat halaman yang sama kalau sudah tidak dipakai.
 
 ### 2.1. Login
 
