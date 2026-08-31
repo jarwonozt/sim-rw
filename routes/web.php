@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\ApiAccessController;
+use App\Http\Controllers\ApiGuideController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FamilyHeadController;
@@ -46,6 +48,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Manajemen Akses API (docs/api-guide.md) — Super Admin menambahkan akun
+// (baru atau yang sudah ada) untuk developer/integrasi lalu menerbitkan
+// token Sanctum untuk akun tersebut, tanpa perlu POST /api/v1/login manual.
+Route::middleware(['auth', 'role:super_admin'])->group(function () {
+    Route::get('/manajemen-akses-api', [ApiAccessController::class, 'index'])->name('api-access.index');
+    Route::post('/manajemen-akses-api/users', [ApiAccessController::class, 'storeUser'])->name('api-access.users.store');
+    Route::post('/manajemen-akses-api/users/{user}/tokens', [ApiAccessController::class, 'storeToken'])->name('api-access.tokens.store');
+    Route::delete('/manajemen-akses-api/tokens/{apiToken}', [ApiAccessController::class, 'destroyToken'])->name('api-access.tokens.destroy');
 });
 
 // Master Data: Wilayah, RW, RT (FR02.1) — hanya Super Admin & Ketua RW.
@@ -171,5 +183,11 @@ Route::middleware(['auth', 'role:super_admin,ketua_rw'])->group(function () {
         ->parameters(['whatsapp-templates' => 'whatsappTemplate'])
         ->only(['index', 'store', 'update', 'destroy']);
 });
+
+// Panduan REST API (docs/issues/002-rest-api.md) — hanya Super Admin, karena
+// audiensnya developer aplikasi mobile, bukan pengurus RW/RT sehari-hari.
+Route::middleware(['auth', 'role:super_admin'])
+    ->get('/panduan-api', ApiGuideController::class)
+    ->name('api-guide.index');
 
 require __DIR__.'/auth.php';
