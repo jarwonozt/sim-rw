@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -33,5 +35,9 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(5)->by($key);
         });
+
+        // Dokumentasi API (Scramble, /docs/api) hanya untuk Super Admin di luar
+        // environment local (lihat config/scramble.php).
+        Gate::define('viewApiDocs', fn (User $user) => $user->role === 'super_admin');
     }
 }

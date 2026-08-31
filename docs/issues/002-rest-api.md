@@ -1,6 +1,6 @@
 # Issue #002 — REST API (Sanctum) untuk Aplikasi Mobile Warga
 
-**Status:** Usulan — belum diimplementasikan.
+**Status:** Selesai (v1) — lihat `routes/api.php`, `App\Http\Controllers\Api\V1\*`, `tests/Feature/Api`, dan panduan pemakaian di [`docs/api-guide.md`](../api-guide.md). Dokumentasi interaktif (Scramble) tersedia di `/docs/api` untuk Super Admin, juga dari menu **Panduan API** di dashboard.
 **Terkait:** [`docs/prd.md`](../prd.md) Bagian 5 (Teknologi) & Bagian 8 — Fase 4 (V2), "...dan PWA"; [`docs/issues/001-modul-inventaris.md`](001-modul-inventaris.md) (modul yang ikut diekspos).
 **Prasyarat:** Tidak ada migrasi baru yang memblokir — hanya menambah tabel bawaan Sanctum (`personal_access_tokens`) di atas skema yang sudah ada.
 
@@ -44,7 +44,7 @@ Membangun REST API sekarang meletakkan fondasi autentikasi berbasis token yang d
 - **Registrasi mandiri via API** — pembuatan akun tetap lewat admin/CMS (pola existing: `User` dibuat lalu ditautkan ke `Resident`), API hanya menangani login.
 - **Refresh token / rotasi / masa kedaluwarsa token** — pakai token statis bawaan Sanctum dulu (revoke manual via logout); kebijakan expiry didorong ke iterasi berikutnya jika ditemukan kebutuhan keamanan tambahan.
 - **OAuth2 / login sosial** — cukup email + password, paritas dengan web (FR01.1).
-- **Dokumentasi interaktif (OpenAPI/Swagger UI)** — v1 cukup didokumentasikan sebagai tabel endpoint di repo; spek OpenAPI formal opsional untuk iterasi berikutnya.
+- ~~Dokumentasi interaktif (OpenAPI/Swagger UI)~~ — ditambahkan lebih awal dari rencana memakai [Scramble](https://scramble.dedoc.co/) (`/docs/api`, khusus Super Admin) karena biayanya rendah (auto-generate dari kode, bukan ditulis manual).
 - **Sinkronisasi offline / cache lokal sisi klien** — di luar tanggung jawab backend.
 - **Endpoint GraphQL atau webhook keluar** — hanya REST.
 

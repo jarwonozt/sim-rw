@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\ApiGuideController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FamilyHeadController;
@@ -171,5 +172,11 @@ Route::middleware(['auth', 'role:super_admin,ketua_rw'])->group(function () {
         ->parameters(['whatsapp-templates' => 'whatsappTemplate'])
         ->only(['index', 'store', 'update', 'destroy']);
 });
+
+// Panduan REST API (docs/issues/002-rest-api.md) — hanya Super Admin, karena
+// audiensnya developer aplikasi mobile, bukan pengurus RW/RT sehari-hari.
+Route::middleware(['auth', 'role:super_admin'])
+    ->get('/panduan-api', ApiGuideController::class)
+    ->name('api-guide.index');
 
 require __DIR__.'/auth.php';
