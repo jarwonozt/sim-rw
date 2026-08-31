@@ -18,15 +18,9 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        $isSuperAdmin = $request->user()->role === 'super_admin';
-
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
-            'apiTokens' => $isSuperAdmin
-                ? $request->user()->tokens()->latest()->get(['id', 'name', 'last_used_at', 'created_at'])
-                : null,
-            'newApiToken' => $isSuperAdmin ? session('newApiToken') : null,
         ]);
     }
 

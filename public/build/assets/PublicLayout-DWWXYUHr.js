@@ -1,1 +1,0 @@
-import{t as e}from"./app-3rhua5sH.js";import{t}from"./PublicNav-Cg9D5LVR.js";var n=e();function r({children:e}){return(0,n.jsxs)(`div`,{className:`min-h-screen bg-slate-100 text-[15px] text-slate-900`,children:[(0,n.jsx)(t,{}),(0,n.jsx)(`main`,{className:`mx-auto max-w-3xl px-4 py-8 sm:px-6`,children:e})]})}export{r as t};
