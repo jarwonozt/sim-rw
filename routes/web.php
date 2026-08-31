@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\ApiGuideController;
+use App\Http\Controllers\ApiTokenController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FamilyHeadController;
@@ -47,6 +48,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+});
+
+// Token API (docs/api-guide.md) — hanya Super Admin yang boleh menerbitkan
+// token, dipakai untuk uji coba developer maupun integrasi produksi tanpa
+// perlu memanggil POST /api/v1/login berulang kali.
+Route::middleware(['auth', 'role:super_admin'])->group(function () {
+    Route::post('/api-tokens', [ApiTokenController::class, 'store'])->name('api-tokens.store');
+    Route::delete('/api-tokens/{apiToken}', [ApiTokenController::class, 'destroy'])->name('api-tokens.destroy');
 });
 
 // Master Data: Wilayah, RW, RT (FR02.1) — hanya Super Admin & Ketua RW.

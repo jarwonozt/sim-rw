@@ -15,6 +15,11 @@ Dokumen ini adalah panduan praktis untuk developer yang mengonsumsi API (mis. ap
 
 ## 2. Alur Autentikasi
 
+Ada dua cara mendapatkan token, tergantung kebutuhan:
+
+- **Aplikasi mobile warga (produksi):** pakai alur login di bawah (2.1) — token dikaitkan ke akun yang login lewat form aplikasi.
+- **Developer/testing atau integrasi server-to-server:** login sebagai **Super Admin** ke dashboard web lalu buka **Profil Saya → Token API** untuk membuat token bernama tanpa perlu memanggil endpoint login berulang kali. Menu ini sengaja dibatasi khusus Super Admin (`role:super_admin` di `routes/web.php`) karena token yang diterbitkan langsung punya akses penuh sesuai akun tersebut. Token ditampilkan **satu kali saat dibuat** — salin segera, dan cabut lewat halaman yang sama kalau sudah tidak dipakai.
+
 ### 2.1. Login
 
 ```
