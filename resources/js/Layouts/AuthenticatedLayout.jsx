@@ -90,8 +90,7 @@ const NAVIGATION = [
         ),
     },
     {
-        name: 'Kas Masuk & Keluar',
-        route: 'treasuries.index',
+        name: 'Kas',
         roles: ['super_admin', 'ketua_rw', 'bendahara'],
         icon: (
             <path
@@ -100,30 +99,23 @@ const NAVIGATION = [
                 d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
         ),
-    },
-    {
-        name: 'Laporan Kas',
-        route: 'treasury-report.index',
-        roles: ['super_admin', 'ketua_rw', 'bendahara'],
-        icon: (
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"
-            />
-        ),
-    },
-    {
-        name: 'Kategori Kas',
-        route: 'treasury-categories.index',
-        roles: ['super_admin', 'ketua_rw', 'bendahara'],
-        icon: (
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.246 2.246 0 00-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122"
-            />
-        ),
+        children: [
+            {
+                name: 'Kas Masuk & Keluar',
+                route: 'treasuries.index',
+                roles: ['super_admin', 'ketua_rw', 'bendahara'],
+            },
+            {
+                name: 'Laporan Kas',
+                route: 'treasury-report.index',
+                roles: ['super_admin', 'ketua_rw', 'bendahara'],
+            },
+            {
+                name: 'Kategori Kas',
+                route: 'treasury-categories.index',
+                roles: ['super_admin', 'ketua_rw', 'bendahara'],
+            },
+        ],
     },
     {
         name: 'Pengaduan',
@@ -150,8 +142,7 @@ const NAVIGATION = [
         ),
     },
     {
-        name: 'Barang Inventaris',
-        route: 'inventory-items.index',
+        name: 'Inventaris',
         roles: ['super_admin', 'ketua_rw', 'sekretaris', 'ketua_rt'],
         icon: (
             <path
@@ -160,42 +151,28 @@ const NAVIGATION = [
                 d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m6.75 3.75h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
             />
         ),
-    },
-    {
-        name: 'Peminjaman Barang',
-        route: 'inventory-loans.index',
-        roles: ['super_admin', 'ketua_rw', 'sekretaris', 'ketua_rt'],
-        icon: (
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-            />
-        ),
-    },
-    {
-        name: 'Laporan Inventaris',
-        route: 'inventory-report.index',
-        roles: ['super_admin', 'ketua_rw', 'sekretaris', 'ketua_rt'],
-        icon: (
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
-            />
-        ),
-    },
-    {
-        name: 'Kategori Inventaris',
-        route: 'inventory-categories.index',
-        roles: ['super_admin', 'ketua_rw', 'sekretaris'],
-        icon: (
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z M6 6h.008v.008H6V6z"
-            />
-        ),
+        children: [
+            {
+                name: 'Barang Inventaris',
+                route: 'inventory-items.index',
+                roles: ['super_admin', 'ketua_rw', 'sekretaris', 'ketua_rt'],
+            },
+            {
+                name: 'Peminjaman Barang',
+                route: 'inventory-loans.index',
+                roles: ['super_admin', 'ketua_rw', 'sekretaris', 'ketua_rt'],
+            },
+            {
+                name: 'Laporan Inventaris',
+                route: 'inventory-report.index',
+                roles: ['super_admin', 'ketua_rw', 'sekretaris', 'ketua_rt'],
+            },
+            {
+                name: 'Kategori Inventaris',
+                route: 'inventory-categories.index',
+                roles: ['super_admin', 'ketua_rw', 'sekretaris'],
+            },
+        ],
     },
     {
         name: 'Broadcast WhatsApp',
@@ -235,9 +212,13 @@ const NAVIGATION = [
     },
 ];
 
+function isRouteActive(routeName) {
+    const routePrefix = routeName.split('.')[0];
+    return route().current(`${routePrefix}.*`) || route().current(routePrefix);
+}
+
 function SidebarLink({ item, onNavigate }) {
-    const routePrefix = item.route.split('.')[0];
-    const active = route().current(`${routePrefix}.*`) || route().current(routePrefix);
+    const active = isRouteActive(item.route);
 
     return (
         <Link
@@ -250,17 +231,85 @@ function SidebarLink({ item, onNavigate }) {
                     : 'text-slate-600 hover:bg-white/70 hover:text-slate-900')
             }
         >
-            <svg
-                className="h-5 w-5 shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.75}
-                stroke="currentColor"
-            >
-                {item.icon}
-            </svg>
+            {item.icon && (
+                <svg
+                    className="h-5 w-5 shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.75}
+                    stroke="currentColor"
+                >
+                    {item.icon}
+                </svg>
+            )}
             {item.name}
         </Link>
+    );
+}
+
+function SidebarGroup({ item, user, onNavigate }) {
+    const children = item.children.filter(
+        (child) => !child.roles || child.roles.includes(user.role),
+    );
+    const hasActiveChild = children.some((child) => isRouteActive(child.route));
+    const [open, setOpen] = useState(hasActiveChild);
+
+    if (children.length === 0) {
+        return null;
+    }
+
+    return (
+        <div>
+            <button
+                type="button"
+                onClick={() => setOpen((prev) => !prev)}
+                className={
+                    'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ' +
+                    (hasActiveChild
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-slate-600 hover:bg-white/70 hover:text-slate-900')
+                }
+            >
+                <svg
+                    className="h-5 w-5 shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.75}
+                    stroke="currentColor"
+                >
+                    {item.icon}
+                </svg>
+                <span className="flex-1 text-left">{item.name}</span>
+                <svg
+                    className={
+                        'h-4 w-4 shrink-0 transition-transform ' +
+                        (open ? 'rotate-180' : '')
+                    }
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.75}
+                    stroke="currentColor"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
+                </svg>
+            </button>
+
+            {open && (
+                <div className="mt-1 space-y-1 pl-8">
+                    {children.map((child) => (
+                        <SidebarLink
+                            key={child.name}
+                            item={child}
+                            onNavigate={onNavigate}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
     );
 }
 
@@ -281,9 +330,22 @@ function SidebarContent({ user, onNavigate }) {
             </Link>
 
             <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
-                {items.map((item) => (
-                    <SidebarLink key={item.name} item={item} onNavigate={onNavigate} />
-                ))}
+                {items.map((item) =>
+                    item.children ? (
+                        <SidebarGroup
+                            key={item.name}
+                            item={item}
+                            user={user}
+                            onNavigate={onNavigate}
+                        />
+                    ) : (
+                        <SidebarLink
+                            key={item.name}
+                            item={item}
+                            onNavigate={onNavigate}
+                        />
+                    ),
+                )}
             </nav>
 
             <div className="m-3 rounded-xl bg-white/70 p-3">
